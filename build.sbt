@@ -54,13 +54,14 @@ Compile / doc / scalacOptions ++= Seq(
   )
 )
 
-lazy val utils = project
+lazy val utils = RootProject(file("/home/jm/Lib/Scala/Utils"))
+
+lazy val main = project
   .in(file("."))
   .settings(
-    name := "Maraist Utils",
-    version := "1.0.0",
     scalaVersion := scala3Version,
     compile / watchTriggers += baseDirectory.value.toGlob / "build.sbt",
     unmanagedSources / excludeFilter := ".#*",
     scalacOptions ++= Seq( "-source:future-migration" ),
   )
+  .dependsOn(utils)
