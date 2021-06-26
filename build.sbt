@@ -5,7 +5,7 @@ val scala3Version = "3.0.0"
 name := "scala-latex"
 
 // library version
-version := "1.0.0"
+version := "1.0.1"
 
 /////////////////////////////////////////////////////////////////
 // begin maven etc. publishing information
@@ -40,6 +40,8 @@ publishTo := {
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 publishMavenStyle := true
+
+ThisBuild / versionScheme := Some("semver-spec")
 
 // end of maven etc. publishing section
 /////////////////////////////////////////////////////////////////
