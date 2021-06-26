@@ -1,5 +1,5 @@
 
-val scala3Version = "3.0.1-RC1"
+val scala3Version = "3.0.0"
 
 // library name
 name := "scala-latex"
@@ -22,7 +22,6 @@ developers := List(Developer(
 licenses += (
   "Educational",
   url("https://github.com/jphmrst/scala-latex/blob/master/LICENSE.txt"))
-publishMavenStyle := true
 
 // disable publish with scala version, otherwise artifact name will
 // include scala version
@@ -32,22 +31,23 @@ crossPaths := false
 // add sonatype repository settings
 // snapshot versions publish to sonatype snapshot repository
 // other versions publish to sonatype staging repository
-publishTo := Some(
+pomIncludeRepository := { _ => false }
+val nexus = "https://s01.oss.sonatype.org/"
+publishTo := {
   if (isSnapshot.value)
-    Opts.resolver.sonatypeSnapshots
+    Some("snapshots" at nexus + "content/repositories/snapshots")
   else
-    Opts.resolver.sonatypeStaging
-)
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
+publishMavenStyle := true
 
 // end of maven etc. publishing section
 /////////////////////////////////////////////////////////////////
 
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.9"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % "test"
 Global / excludeLintKeys ++= Set(scalacOptions)
 Compile / doc / scalacOptions ++= Seq(
-  "-groups",
-  "-doc-root-content", "src/main/rootdoc.txt",
+  // "-groups",
+  "-doc-root-content", "src/root.scaladoc",
   "-external-mappings:" ++ (
     ".*scala.*::scaladoc3::" ++ "http://dotty.epfl.ch/api/,"
       ++ "org\\.scalatest.*::scaladoc3::" ++ "http://doc.scalatest.org/3.0.0/"
