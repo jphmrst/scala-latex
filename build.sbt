@@ -5,7 +5,7 @@ val scala3Version = "3.0.0"
 name := "scala-latex"
 
 // library version
-version := "1.0.1"
+version := "1.1.0"
 
 /////////////////////////////////////////////////////////////////
 // begin maven etc. publishing information

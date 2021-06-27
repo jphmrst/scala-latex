@@ -22,148 +22,224 @@ import org.maraist.graphviz.Graphable
  * @param rootFile Root name of the output file (without .tex, .pdf
  * etc. suffixes)
  */
-class LaTeXdoc(var rootFile:String) {
+class LaTeXdoc(var rootFile: String) {
   /** Title of the document */
-  var title:String=""
+  var title: String=""
   /** Author(s) of the document */
-  var author:String=""
+  var author: String=""
   /** Date of the document (or \today if empty) */
-  var date:String=""
+  var date: String=""
   /** Number of passes needed to latex the document */
-  var passes:Int=1
-  var bw:BufferedWriter = new BufferedWriter(new FileWriter("/dev/null"))
+  var passes: Int=1
+  var bw: BufferedWriter = new BufferedWriter(new FileWriter("/dev/null"))
   private val packageSpecs = new ListBuffer[PackageSpec]()
   private val preamble = new ListBuffer[String]()
   private var opened=false;
   private def cleaner = new FilesCleaner
 
-  var classOptions:Option[String] = None
+  var classOptions: Option[String] = None
 
-  def writeClassOptions(bw:BufferedWriter):Unit = classOptions match {
-    case None => { }
-    case Some(s) => {
-      bw.write("[")
-      bw.write(s)
-      bw.write("]")
+  private trait DocState(val phase: String, val isOpen: Boolean) {
+    def addPreamble(s: String): Unit =
+      throw new IllegalStateException(
+        "Cannot call addPreamble " + phase)
+    def setClass(p: String): Unit =
+      throw new IllegalStateException(
+        "Cannot call setClass " + phase)
+    def setClassOptions(p: String): Unit =
+      throw new IllegalStateException(
+        "Cannot call setClassOptions " + phase)
+    def addPackage(p: String): Unit =
+      throw new IllegalStateException(
+        "Cannot call addPackage " + phase)
+    def addPackage(p: String, opts: String): Unit =
+      throw new IllegalStateException(
+        "Cannot call addPackage " + phase)
+    def open(): Unit =
+      throw new IllegalStateException("Cannot call open " + phase)
+    def ++=(s: String): Unit =
+      throw new IllegalStateException("Cannot call ++= " + phase)
+    def ++=*(s: String): Unit =
+      throw new IllegalStateException("Cannot call ++=* " + phase)
+    def close(): Unit =
+      throw new IllegalStateException("Cannot call close " + phase)
+    def graphable[X,Y]
+      (what: Graphable[X,Y], tag: String, width: String):
+        Unit =
+      throw new IllegalStateException("Cannot call graphable " + phase)
+  }
+
+  private var docState: DocState = new BeforeOpen
+
+  private var docClass: String = "article"
+
+  private class BeforeOpen
+      extends DocState("before opening document", false) {
+    override def setClass(c: String): Unit = {
+      docClass = c
+    }
+    override def setClassOptions(p: String): Unit = {
+      classOptions = Some(p)
+    }
+    override def addPreamble(s: String): Unit = { preamble += s }
+    override def addPackage(p: String): Unit = {
+      packageSpecs += new PackageSpec(p,None)
+    }
+    override def addPackage(p: String, opts: String): Unit = {
+      packageSpecs += new PackageSpec(p,Some(opts))
+    }
+    override def open(): Unit = {
+      docState = new Open
+
+      val file = new File(rootFile + ".tex")
+      bw = new BufferedWriter(new FileWriter(file))
+      bw.write("\\documentclass")
+      writeClassOptions(bw)
+      bw.write("{")
+      bw.write(docClass)
+      bw.write("}\n")
+      for(packageSpec <- packageSpecs) {
+        packageSpec.render(bw)
+      }
+      for(pre <- preamble) {
+        bw.write(pre)
+      }
+
+      var makeTitle = false
+      if (title.length>0 || author.length>0 || date.length>0)  {
+        bw.write("\\title{" + title + "}\n\\author{" + author + "}\n")  // scalastyle:ignore
+        if (date.length>0)
+          bw.write("\\date{" + date + "}\n")
+        else
+          bw.write("\\date{\\today}\n")
+        makeTitle=true
+      }
+      bw.write("\\begin{document}\n")
+      if (makeTitle) bw.write("\\maketitle\n")
     }
   }
 
-  private var serial:Int = 0
-  def getSerial:Int = {
+  private class Open extends DocState("after opening document", true) {
+
+    override def ++=(s: String): Unit = {
+      bw.write(s)
+      bw.flush()
+    }
+
+    override def ++=*(s: String): Unit =
+      ++= (s
+        .replace("&", "\\&")
+        .replace("#", "\\#")
+        .replace("%", "\\%")
+        .replace(". ", ".\\ "))
+
+    override def close(): Unit = {
+      docState = new Closed
+      bw.write("\\end{document}\n")
+      bw.close()
+
+      val lastSlash = rootFile.lastIndexOf('/')
+      if (lastSlash<0) {
+        for(a <- 1 to passes) {
+          { Seq("pdflatex",rootFile) !! }
+        }
+      } else {
+        val dir = rootFile.substring(0,lastSlash)
+        val bareRootFile = rootFile.substring(1+lastSlash)
+        for(a <- 1 to passes) {
+          Process("pdflatex "+bareRootFile, new File(dir)).!!
+        }
+      }
+      cleaner.clean
+    }
+
+    override def graphable[X,Y]
+      (what: Graphable[X,Y], tag: String, width: String):
+        Unit = {
+      what.graphviz(tag)
+      cleaner += (tag + ".pdf")
+      this ++= "\\includegraphics[width="
+      this ++= width
+      this ++= "]{"
+      this ++= tag
+      this ++= ".pdf}"
+    }
+  }
+
+  private class Closed extends DocState("on closed document", false)
+
+  protected def writeClassOptions(bw: BufferedWriter): Unit =
+    classOptions match {
+      case None => { }
+      case Some(s) => {
+        bw.write("[")
+        bw.write(s)
+        bw.write("]")
+      }
+    }
+
+  private var serial: Int = 0
+  protected def getSerial: Int = {
     val result = serial
     serial += 1
     result
   }
 
-  def isOpen:Boolean = opened
-
-  protected def postclean(filename:String):Unit = { cleaner += filename }
-
-  /** Add to the preamble */
-  def addPreamble(s:String):Unit = {
-    if (opened) {
-      throw new RuntimeException
-          ("Cannot add preamble material once body is open")
-    }
-    preamble += s
+  protected def postclean(filename: String): Unit = {
+    cleaner += filename
   }
 
-  /** Add a package */
-  def addPackage(p:String):Unit = {
-    if (opened) {
-      throw new RuntimeException("Cannot add packages once body is open")
-    }
-    packageSpecs += new PackageSpec(p,None)
-  }
-  /** Add a package, with options */
-  def addPackage(p:String, opts:String):Unit = {
-    if (opened)
-      throw new RuntimeException("Cannot add packages once body is open")
-    packageSpecs += new PackageSpec(p,Some(opts))
-  }
+  // -----------------------------------------------------------------
+  // The remaining methods delegate to the docState.
+  // -----------------------------------------------------------------
 
-  def open():Unit = {
-    if (opened) { throw new RuntimeException("Cannot reopen file") }
-    opened=true;
+  /** Returns true after the document is opened for writing the body,
+    * but before it is closed.
+    */
+  def isOpen: Boolean = docState.isOpen
 
-    val file = new File(rootFile + ".tex")
-    bw = new BufferedWriter(new FileWriter(file))
-    bw.write("\\documentclass")
-    writeClassOptions(bw)
-    bw.write("{article}\n")
-    for(packageSpec <- packageSpecs) {
-      packageSpec.render(bw)
-    }
-    for(pre <- preamble) {
-      bw.write(pre)
-    }
+  /** Set the document class of this document.
+    */
+  def setClass(c: String): Unit = docState.setClass(c)
 
-    var makeTitle = false
-    if (title.length>0 || author.length>0 || date.length>0)  {
-      bw.write("\\title{" + title + "}\n\\author{" + author + "}\n")  // scalastyle:ignore
-      if (date.length>0)
-        bw.write("\\date{" + date + "}\n")
-      else
-        bw.write("\\date{\\today}\n")
-      makeTitle=true
-    }
-    bw.write("\\begin{document}\n")
-    if (makeTitle) bw.write("\\maketitle\n")
-  }
+  /** Set the document class options of this document.
+    */
+  def setClassOptions(p: String): Unit = docState.setClassOptions(p)
 
-  /** Add text to the body */
-  def ++=(s:String):Unit = {
-    if (!opened) {
-      throw new RuntimeException("Cannot write to unopened file")
-    }
-    bw.write(s)
-    bw.flush()
-  }
+  /** Add to the preamble. */
+  def addPreamble(s: String): Unit = docState.addPreamble(s)
 
-  /** Add text to the body */
-  def ++=*(s:String):Unit = {
-    ++= (s.replace("&", "\\&")
-          .replace("#", "\\#")
-          .replace("%", "\\%")
-          .replace(". ", ".\\ "))
-  }
+  /** Add a package. */
+  def addPackage(p: String): Unit = docState.addPackage(p)
+
+  /** Add a package, with options. */
+  def addPackage(p: String, opts: String): Unit =
+    docState.addPackage(p, opts)
+
+  /** Conclude prelude operations, and open the document for writing
+    * contents.
+    */
+  def open(): Unit = docState.open()
+
+  /** Add text to the body. */
+  def ++=(s: String): Unit = docState.++=(s)
+
+  /** Add text to the body. */
+  def ++=*(s: String): Unit = docState.++=*(s)
 
   /** Finish receiving body text, and run LaTeX on the constructed
    *  document.
    */
-  def close():Unit = {
-    if (!opened) { throw new RuntimeException("Cannot close opened file") }
-    bw.write("\\end{document}\n")
-    bw.close()
+  def close(): Unit = docState.close()
 
-    val lastSlash = rootFile.lastIndexOf('/')
-    if (lastSlash<0) {
-      for(a <- 1 to passes) {
-        { Seq("pdflatex",rootFile) !! }
-      }
-    } else {
-      val dir = rootFile.substring(0,lastSlash)
-      val bareRootFile = rootFile.substring(1+lastSlash)
-      for(a <- 1 to passes) {
-        Process("pdflatex "+bareRootFile, new File(dir)).!!
-      }
-    }
-    cleaner.clean
-  }
-
-  def graphable[X,Y](what:Graphable[X,Y], tag:String, width:String):Unit = {
-    what.graphviz(tag)
-    cleaner += (tag + ".pdf")
-    this ++= "\\includegraphics[width="
-    this ++= width
-    this ++= "]{"
-    this ++= tag
-    this ++= ".pdf}"
-  }
+  /** Render an object which can be depicted via Graphviz.
+    */
+  def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String):
+        Unit = docState.graphable(what, tag, width)
 }
 
-class PackageSpec(name:String, options:Option[String]) {
-  def render(bw:BufferedWriter):Unit = {
+class PackageSpec(name: String, options: Option[String]) {
+  def render(bw: BufferedWriter): Unit = {
     bw.write("\\usepackage")
     options match {
       case Some(s) => {
