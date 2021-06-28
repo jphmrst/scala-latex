@@ -59,8 +59,12 @@ class LaTeXdoc(var rootFile: String) {
       throw new IllegalStateException("Cannot call open " + phase)
     def ++=(s: String): Unit =
       throw new IllegalStateException("Cannot call ++= " + phase)
+    def ++=/(s: String): Unit =
+      throw new IllegalStateException("Cannot call ++=/ " + phase)
     def ++=*(s: String): Unit =
       throw new IllegalStateException("Cannot call ++=* " + phase)
+    def ++=*/(s: String): Unit =
+      throw new IllegalStateException("Cannot call ++=*/ " + phase)
     def close(): Unit =
       throw new IllegalStateException("Cannot call close " + phase)
     def graphable[X,Y]
@@ -126,12 +130,16 @@ class LaTeXdoc(var rootFile: String) {
       bw.flush()
     }
 
+    override def ++=/(s: String): Unit = ++=(s + "\n")
+
     override def ++=*(s: String): Unit =
       ++= (s
         .replace("&", "\\&")
         .replace("#", "\\#")
         .replace("%", "\\%")
         .replace(". ", ".\\ "))
+
+    override def ++=*/(s: String): Unit = ++=*(s + "\n")
 
     override def close(): Unit = {
       docState = new Closed
@@ -221,11 +229,21 @@ class LaTeXdoc(var rootFile: String) {
     */
   def open(): Unit = docState.open()
 
-  /** Add text to the body. */
+  /** Add LaTeX source to the body. */
   def ++=(s: String): Unit = docState.++=(s)
 
-  /** Add text to the body. */
+  /** Add text to the body, encoding it as LaTeX. */
   def ++=*(s: String): Unit = docState.++=*(s)
+
+  /** Add LaTeX source to the body, following it with a carriage return
+    * in the source.
+    */
+  def ++=/(s: String): Unit = docState.++=/(s)
+
+  /** Add text to the body, encoding it as LaTeX, and following it with
+    * a carriage return in the source.
+    */
+  def ++=*/(s: String): Unit = docState.++=*/(s)
 
   /** Finish receiving body text, and run LaTeX on the constructed
    *  document.
