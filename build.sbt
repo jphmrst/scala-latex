@@ -49,11 +49,7 @@ ThisBuild / versionScheme := Some("semver-spec")
 Global / excludeLintKeys ++= Set(scalacOptions)
 Compile / doc / scalacOptions ++= Seq(
   // "-groups",
-  "-doc-root-content", "src/root.scaladoc",
-  "-external-mappings:" ++ (
-    ".*scala.*::scaladoc3::" ++ "http://dotty.epfl.ch/api/,"
-      ++ "org\\.scalatest.*::scaladoc3::" ++ "http://doc.scalatest.org/3.0.0/"
-  )
+  "-doc-root-content", "src/root.scaladoc"
 )
 
 lazy val main = project
