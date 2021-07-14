@@ -1,6 +1,3 @@
-# ScalaUtils
+# scala-latex
 
-Some Scala utilities I use in other projects.
-
-Written mostly out of ignorance of better solutions, or of laziness
-against a larger, more complicated framework.
+Generating and controlling LaTeX and Graphviz from within Scala.
