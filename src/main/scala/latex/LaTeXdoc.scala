@@ -12,16 +12,14 @@ package org.maraist.latex
 import scala.language.postfixOps
 import scala.sys.process.* // scalastyle:ignore
 import scala.collection.mutable.ListBuffer
-import java.io.File
-import java.io.FileWriter
-import java.io.BufferedWriter
+import java.io.{File, FileWriter, BufferedWriter}
 import org.maraist.util.FilesCleaner
 import org.maraist.graphviz.Graphable
 
 /** Accumulation of LaTeX source, to be processed when closed.
- * @param rootFile Root name of the output file (without .tex, .pdf
- * etc. suffixes)
- */
+  * @param rootFile Root name of the output file (without `.tex`,
+  * `.pdf` etc. suffixes)
+  */
 class LaTeXdoc(var rootFile: String) {
   /** Title of the document */
   var title: String=""
@@ -256,6 +254,10 @@ class LaTeXdoc(var rootFile: String) {
         Unit = docState.graphable(what, tag, width)
 }
 
+/** Description of the LaTeX package associated with a document.
+  * @param name The name of the package.
+  * @param options A list of options to be passed to the package.
+  */
 class PackageSpec(name: String, options: Option[String]) {
   def render(bw: BufferedWriter): Unit = {
     bw.write("\\usepackage")

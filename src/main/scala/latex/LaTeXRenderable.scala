@@ -33,6 +33,8 @@ trait LaTeXRenderer[X] {
  *  instances.
  */
 object LaTeXRenderables {
+
+  /** Trivial instance which has no output. */
   val nothing: LaTeXRenderable = new LaTeXRenderable {
     def toLaTeX(doc:LaTeXdoc): Unit = { }
   }
@@ -40,8 +42,10 @@ object LaTeXRenderables {
   private val singleCenteredColumnBegin:String = "\\begin{tabular}[c]{@{}c@{}}"
   private val singleCenteredColumnEnd:String = "\\end{tabular}"
 
-  def iterableVerticalTable[A<:LaTeXRenderable](items:Iterable[A],
-                                                doc:LaTeXdoc): Unit = {
+  /** Arrange items in a vertical column. */
+  def iterableVerticalTable[A<:LaTeXRenderable]
+    (items: Iterable[A], doc: LaTeXdoc):
+      Unit = {
     doc ++= singleCenteredColumnBegin
     var sep = ""
     for(item <- items) {
@@ -51,8 +55,13 @@ object LaTeXRenderables {
     }
     doc ++= singleCenteredColumnEnd
   }
-  def iterableVerticalTableOrSolo[A<:LaTeXRenderable](items:Iterable[A],
-                                                      doc:LaTeXdoc): Unit = {
+
+  /** Arrange items in a vertical column if there are multiple items, or
+    * in place otherwise.
+    */
+  def iterableVerticalTableOrSolo[A<:LaTeXRenderable]
+    (items: Iterable[A], doc: LaTeXdoc):
+      Unit = {
     items.size match {
       case 0 => { }
       case 1 => items.iterator.next().toLaTeX(doc)
@@ -68,8 +77,15 @@ object LaTeXRenderables {
       }
     }
   }
-  def iterableVerticalTable[A](items:Iterable[A],doc:LaTeXdoc,
-                               helper:(A,LaTeXdoc)=>Unit): Unit = {
+
+  /** Arrange items in a vertical column if there are multiple items,
+    * with a helper function for rendering items.
+    */
+  def iterableVerticalTable[A](
+    items: Iterable[A],
+    doc: LaTeXdoc,
+    helper: (A,LaTeXdoc) => Unit):
+      Unit = {
     if (items.isEmpty) {
       doc ++= "---"
     } else {
