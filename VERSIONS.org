@@ -1,0 +1,5 @@
+
+- 1.1.2 :: Added `+=` operator for adding a single character to the
+  document.
+
+  This file of changed started with this version

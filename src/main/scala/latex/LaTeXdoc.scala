@@ -55,6 +55,8 @@ class LaTeXdoc(var rootFile: String) {
         "Cannot call addPackage " + phase)
     def open(): Unit =
       throw new IllegalStateException("Cannot call open " + phase)
+    def +=(c: Char): Unit =
+      throw new IllegalStateException("Cannot call += " + phase)
     def ++=(s: String): Unit =
       throw new IllegalStateException("Cannot call ++= " + phase)
     def ++=/(s: String): Unit =
@@ -125,6 +127,11 @@ class LaTeXdoc(var rootFile: String) {
 
     override def ++=(s: String): Unit = {
       bw.write(s)
+      bw.flush()
+    }
+
+    override def +=(c: Char): Unit = {
+      bw.write(c)
       bw.flush()
     }
 
@@ -229,6 +236,9 @@ class LaTeXdoc(var rootFile: String) {
 
   /** Add LaTeX source to the body. */
   def ++=(s: String): Unit = docState.++=(s)
+
+  /** Add character to the body. */
+  def +=(c: Char): Unit = docState.+=(c)
 
   /** Add text to the body, encoding it as LaTeX. */
   def ++=*(s: String): Unit = docState.++=*(s)
