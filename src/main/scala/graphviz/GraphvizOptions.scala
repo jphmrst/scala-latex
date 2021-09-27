@@ -12,6 +12,7 @@ package org.maraist.graphviz
 
 class GraphvizOptions(
   var format: String = "pdf",
+  var srcSuffix: String = "dot",
   var executable: String = "dot",
   var keepDOT: Boolean = false,
   var fontSize: Int = GraphvizOptions.defaultFontSize,
@@ -20,8 +21,8 @@ class GraphvizOptions(
   var finalNodeShape: String = "doublecircle") {
   def this(opts: GraphvizOptions) = {
     this(
-      opts.format, opts.executable, opts.keepDOT, opts.fontSize,
-      opts.margin, opts.nodeShape, opts.finalNodeShape)
+      opts.format, opts.srcSuffix, opts.executable, opts.keepDOT,
+      opts.fontSize, opts.margin, opts.nodeShape, opts.finalNodeShape)
   }
 }
 

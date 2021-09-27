@@ -44,8 +44,8 @@ trait Graphable[S,T] {
     transitionLabeling:TransitionLabeling[T],
     options: GraphvizOptions
   ):Unit = graphviz(
-    fileRoot + "." + options.format,
-    fileRoot + "." + options.executable)
+    fileRoot + "." + options.srcSuffix,
+    fileRoot + "." + options.format)
 
   /** Use Graphviz to render this object as specified. */
   def graphviz(sourceFile: String, outputFile: String)(using
@@ -65,10 +65,10 @@ trait Graphable[S,T] {
     bw.write("}\n")
     bw.close()
 
-    val cmd = Seq(options.executable,
+    val cmd = Seq(options.srcSuffix,
                   "-T" + options.format,
                   "-o" + outputFile,
-                  options.sourceFile)
+                  sourceFile)
     cmd !
 
     if (!options.keepDOT) file.delete()
@@ -95,30 +95,37 @@ trait Grapher[X,S,T](using
    *  Return the inner lines of a digraph block (or other Graphviz style)
    *  to render an object.
    */
-  def toDOT(x:X,
-            nodeLabeling:NodeLabeling[S] = this.nodeLabeling,
-            transitionLabeling:TransitionLabeling[T] =
-              this.transitionLabeling):String
+  def toDOT(x:X)(using
+    nodeLabeling: NodeLabeling[S],
+    transitionLabeling: TransitionLabeling[T],
+    graphvizOptions: GraphvizOptions
+  ): String
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
-  def graphviz(fileRoot:String, x:X,
-               nodeLabeling:NodeLabeling[S] = this.nodeLabeling,
-               transitionLabeling:TransitionLabeling[T] =
-                 this.transitionLabeling):Unit = {
-    val options = graphvizOptions
-    options.sourceFile = fileRoot + ".dot"
-    options.outputFile = fileRoot + ".pdf"
-    graphviz(options, x, nodeLabeling, transitionLabeling)
+  def graphviz(fileRoot:String, x:X)(using
+    nodeLabeling: NodeLabeling[S],
+    transitionLabeling: TransitionLabeling[T],
+    options: GraphvizOptions
+  ): Unit = {
+    // println("In 2-arg graphviz()")
+    graphviz(
+      fileRoot + "." + options.srcSuffix,
+      fileRoot + "." + options.format,
+      x)
   }
 
-  /** Use Graphviz to render this object as specified.
+  /** Use Graphviz to render this object (in the default format) to the
+   *  given file.
    */
-  def graphviz(options:GraphvizOptions, x:X,
-               nodeLabeling:NodeLabeling[S],
-               transitionLabeling:TransitionLabeling[T]):Unit = {
-    val file = new File(options.sourceFile)
+  def graphviz(sourceFile: String, outputFile: String, x: X)(using
+    nodeLabeling: NodeLabeling[S],
+    transitionLabeling: TransitionLabeling[T],
+    options: GraphvizOptions
+  ): Unit = {
+    // println("In 3-arg graphviz()")
+    val file = new File(sourceFile)
     val bw = new BufferedWriter(new FileWriter(file))
     bw.write("digraph finite_state_machine {\n")
     bw.write("\tmargin=\"")
@@ -126,16 +133,19 @@ trait Grapher[X,S,T](using
     bw.write("\"; fontsize=\"")
     bw.write(options.fontSize.toString())
     bw.write("\"; rankdir=LR; \tsize=\"8,5\"\n")
-    bw.write(toDOT(x, nodeLabeling, transitionLabeling))
+    bw.write(toDOT(x))
     bw.write("}\n")
     bw.close()
 
-    val cmd = Seq(options.executable,
-                  "-T" + options.format,
-                  "-o" + options.outputFile,
-                  options.sourceFile)
+    val cmd = Seq(
+      options.executable,
+      "-T" + options.format,
+      "-o" + outputFile,
+      sourceFile)
+    // println("Running " + cmd)
     cmd !
 
+    // println("Completed")
     if (!options.keepDOT) file.delete()
   }
 }

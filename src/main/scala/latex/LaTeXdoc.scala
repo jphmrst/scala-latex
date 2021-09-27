@@ -169,6 +169,7 @@ class LaTeXdoc(var rootFile: String) {
     override def graphable[X,Y]
       (what: Graphable[X,Y], tag: String, width: String):
         Unit = {
+      // println(" - In LaTeXdoc.graphable")
       what.graphviz(tag)
       cleaner += (tag + ".pdf")
       this ++= "\\includegraphics[width="
