@@ -1,4 +1,4 @@
-// Copyright (C) 2017 John Maraist
+// Copyright (C) 2017, 2021 John Maraist
 // See the LICENSE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -30,33 +30,30 @@ trait Graphable[S,T] {
    *  Return the inner lines of a digraph block (or other Graphviz style)
    *  to render this object.
    */
-  def toDOT(nodeLabeling:NodeLabeling[S] = this.nodeLabeling,
-            transitionLabeling:TransitionLabeling[T] =
-              this.transitionLabeling):String
-
-  var graphvizOptions:GraphvizOptions = summon[GraphvizOptions]
-  var nodeLabeling:NodeLabeling[S] = summon[NodeLabeling[S]]
-  var transitionLabeling:TransitionLabeling[T] =
-    summon[TransitionLabeling[T]]
+  def toDOT(using
+    nodeLabeling: NodeLabeling[S],
+    transitionLabeling: TransitionLabeling[T],
+    graphvizOptions: GraphvizOptions
+  ): String
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
-  def graphviz(fileRoot:String,
-               nodeLabeling:NodeLabeling[S] = this.nodeLabeling,
-               transitionLabeling:TransitionLabeling[T] =
-                 this.transitionLabeling):Unit = {
-    val options = graphvizOptions
-    options.sourceFile = fileRoot + ".dot"
-    options.outputFile = fileRoot + ".pdf"
-    graphviz(options, nodeLabeling, transitionLabeling)
-  }
+  def graphviz(fileRoot:String)(using
+    nodeLabeling:NodeLabeling[S],
+    transitionLabeling:TransitionLabeling[T],
+    options: GraphvizOptions
+  ):Unit = graphviz(
+    fileRoot + "." + options.format,
+    fileRoot + "." + options.executable)
 
   /** Use Graphviz to render this object as specified. */
-  def graphviz(options:GraphvizOptions,
-               nodeLabeling:NodeLabeling[S],
-               transitionLabeling:TransitionLabeling[T]):Unit = {
-    val file = new File(options.sourceFile)
+  def graphviz(sourceFile: String, outputFile: String)(using
+    nodeLabeling: NodeLabeling[S],
+    transitionLabeling: TransitionLabeling[T],
+    options: GraphvizOptions
+  ): Unit = {
+    val file = new File(sourceFile)
     val bw = new BufferedWriter(new FileWriter(file))
     bw.write("digraph finite_state_machine {\n")
     bw.write("\tmargin=\"")
@@ -64,13 +61,13 @@ trait Graphable[S,T] {
     bw.write("\"; fontsize=\"")
     bw.write(options.fontSize.toString())
     bw.write("\"; rankdir=LR; \tsize=\"8,5\"\n")
-    bw.write(toDOT(nodeLabeling, transitionLabeling))
+    bw.write(toDOT)
     bw.write("}\n")
     bw.close()
 
     val cmd = Seq(options.executable,
                   "-T" + options.format,
-                  "-o" + options.outputFile,
+                  "-o" + outputFile,
                   options.sourceFile)
     cmd !
 
@@ -88,7 +85,12 @@ trait Graphable[S,T] {
  * to (possibly implicit) options to render an object.  These methods
  * both have defaults provided in this trait.
  */
-trait Grapher[X,S,T] {
+trait Grapher[X,S,T](using
+  nodeLabeling: NodeLabeling[S],
+  transitionLabeling: TransitionLabeling[T],
+  graphvizOptions: GraphvizOptions
+) {
+
   /**
    *  Return the inner lines of a digraph block (or other Graphviz style)
    *  to render an object.
@@ -97,11 +99,6 @@ trait Grapher[X,S,T] {
             nodeLabeling:NodeLabeling[S] = this.nodeLabeling,
             transitionLabeling:TransitionLabeling[T] =
               this.transitionLabeling):String
-
-  var nodeLabeling:NodeLabeling[S] = summon[NodeLabeling[S]]
-  var transitionLabeling:TransitionLabeling[T] =
-    summon[TransitionLabeling[T]]
-  var graphvizOptions:GraphvizOptions = summon[GraphvizOptions]
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.

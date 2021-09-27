@@ -1,4 +1,4 @@
-// Copyright (C) 2017 John Maraist
+// Copyright (C) 2017, 2021 John Maraist
 // See the LICENSE.txt file distributed with this work for additional
 // information regarding copyright ownership.
 //
@@ -10,23 +10,24 @@
 
 package org.maraist.graphviz
 
-class GraphvizOptions(var sourceFile:String = "graph.dot",
-                      var outputFile:String = "graph.pdf",
-                      var format:String = "pdf",
-                      var executable:String = "dot",
-                      var keepDOT:Boolean = false,
-                      var fontSize:Int = GraphvizOptions.defaultFontSize,
-                      var margin:Double = GraphvizOptions.defaultMargin,
-                      var nodeShape:String = "circle",
-                      var finalNodeShape:String = "doublecircle") {
-  def this(opts:GraphvizOptions) = {
-    this(opts.sourceFile, opts.outputFile, opts.format, opts.executable,
-         opts.keepDOT, opts.fontSize, opts.margin, opts.nodeShape,
-         opts.finalNodeShape)
+class GraphvizOptions(
+  var format: String = "pdf",
+  var executable: String = "dot",
+  var keepDOT: Boolean = false,
+  var fontSize: Int = GraphvizOptions.defaultFontSize,
+  var margin: Double = GraphvizOptions.defaultMargin,
+  var nodeShape: String = "circle",
+  var finalNodeShape: String = "doublecircle") {
+  def this(opts: GraphvizOptions) = {
+    this(
+      opts.format, opts.executable, opts.keepDOT, opts.fontSize,
+      opts.margin, opts.nodeShape, opts.finalNodeShape)
   }
 }
+
 object GraphvizOptions {
   given GraphvizOptions = new GraphvizOptions()
-  val defaultFontSize:Int = 12
-  val defaultMargin:Double = 0.5
+  def makeLocalOptions(using opts: GraphvizOptions) = new GraphvizOptions(opts)
+  val defaultFontSize: Int = 12
+  val defaultMargin: Double = 0.5
 }

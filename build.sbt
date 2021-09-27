@@ -1,11 +1,12 @@
 
-val scala3Version = "3.0.2-RC1"
+val scala3Version = "3.0.2"
 
 // library name
 name := "scala-latex"
 
 // library version
-version := "1.1.2"
+version := "2.0.0" // Roll version for simplifying API
+
 
 /////////////////////////////////////////////////////////////////
 // begin maven etc. publishing information
