@@ -1,5 +1,5 @@
 
-val scala3Version = "3.0.2-RC1"
+val scala3Version = "3.0.2"
 
 // library name
 name := "scala-latex"
