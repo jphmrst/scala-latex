@@ -14,7 +14,8 @@ import scala.sys.process.* // scalastyle:ignore
 import scala.collection.mutable.ListBuffer
 import java.io.{File, FileWriter, BufferedWriter}
 import org.maraist.util.FilesCleaner
-import org.maraist.graphviz.Graphable
+import org.maraist.graphviz.
+  {Graphable, GraphvizOptions, NodeLabeling, TransitionLabeling}
 
 /** Accumulation of LaTeX source, to be processed when closed.
   * @param rootFile Root name of the output file (without `.tex`,
@@ -67,8 +68,12 @@ class LaTeXdoc(var rootFile: String) {
       throw new IllegalStateException("Cannot call ++=*/ " + phase)
     def close(): Unit =
       throw new IllegalStateException("Cannot call close " + phase)
-    def graphable[X,Y]
-      (what: Graphable[X,Y], tag: String, width: String):
+    def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String
+    )(using
+      nodeLabeling: NodeLabeling[X],
+      transitionLabeling: TransitionLabeling[Y],
+      options: GraphvizOptions
+    ):
         Unit =
       throw new IllegalStateException("Cannot call graphable " + phase)
   }
@@ -166,8 +171,13 @@ class LaTeXdoc(var rootFile: String) {
       cleaner.clean
     }
 
-    override def graphable[X,Y]
-      (what: Graphable[X,Y], tag: String, width: String):
+    override def graphable[X,Y](
+      what: Graphable[X,Y], tag: String, width: String
+    )(using
+      nodeLabeling: NodeLabeling[X],
+      transitionLabeling: TransitionLabeling[Y],
+      options: GraphvizOptions
+    ):
         Unit = {
       // println(" - In LaTeXdoc.graphable")
       what.graphviz(tag)
@@ -261,8 +271,11 @@ class LaTeXdoc(var rootFile: String) {
 
   /** Render an object which can be depicted via Graphviz.
     */
-  def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String):
-        Unit = docState.graphable(what, tag, width)
+  def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String)(using
+    nodeLabeling: NodeLabeling[X],
+    transitionLabeling: TransitionLabeling[Y],
+    options: GraphvizOptions
+  ): Unit = docState.graphable(what, tag, width)
 }
 
 /** Description of the LaTeX package associated with a document.

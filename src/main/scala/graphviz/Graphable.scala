@@ -39,9 +39,9 @@ trait Graphable[S,T] {
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
-  def graphviz(fileRoot:String)(using
-    nodeLabeling:NodeLabeling[S],
-    transitionLabeling:TransitionLabeling[T],
+  def graphviz(fileRoot: String)(using
+    nodeLabeling: NodeLabeling[S],
+    transitionLabeling: TransitionLabeling[T],
     options: GraphvizOptions
   ):Unit = graphviz(
     fileRoot + "." + options.srcSuffix,
