@@ -70,9 +70,9 @@ class LaTeXdoc(var rootFile: String) {
       throw new IllegalStateException("Cannot call close " + phase)
     def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String
     )(using
-      nodeLabeling: NodeLabeling[X],
+      nodeLabeling: NodeLabeling[X, Y],
       transitionLabeling: TransitionLabeling[Y],
-      options: GraphvizOptions
+      options: GraphvizOptions[X, Y]
     ):
         Unit =
       throw new IllegalStateException("Cannot call graphable " + phase)
@@ -174,9 +174,9 @@ class LaTeXdoc(var rootFile: String) {
     override def graphable[X,Y](
       what: Graphable[X,Y], tag: String, width: String
     )(using
-      nodeLabeling: NodeLabeling[X],
+      nodeLabeling: NodeLabeling[X, Y],
       transitionLabeling: TransitionLabeling[Y],
-      options: GraphvizOptions
+      options: GraphvizOptions[X, Y]
     ):
         Unit = {
       // println(" - In LaTeXdoc.graphable")
@@ -272,9 +272,9 @@ class LaTeXdoc(var rootFile: String) {
   /** Render an object which can be depicted via Graphviz.
     */
   def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String)(using
-    nodeLabeling: NodeLabeling[X],
+    nodeLabeling: NodeLabeling[X, Y],
     transitionLabeling: TransitionLabeling[Y],
-    options: GraphvizOptions
+    options: GraphvizOptions[X, Y]
   ): Unit = docState.graphable(what, tag, width)
 }
 

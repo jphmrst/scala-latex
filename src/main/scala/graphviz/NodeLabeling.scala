@@ -11,33 +11,40 @@
 
 package org.maraist.graphviz
 
-trait NodeLabeling[-S] {
-  def getLabel(s:S):String
+trait SimpleLabeling[-S] {
+  def getLabel(s: S): String
 }
-object NodeLabeling {
-  given NodeLabeling[Any] with
-    def getLabel(s:Any):String = s.toString()
 
-  given NodeLabeling[Set[? <: Any]] with
-    def getLabel(ss:Set[? <: Any]):String = {
+trait NodeLabeling[S, T] {
+  def getLabel(s: S, graph: Graphable[S, T]): String
+}
+
+object NodeLabeling {
+  given labelAny[S, T]: NodeLabeling[S, T] with
+    def getLabel(s: S, g: Graphable[S, T]):String = s.toString()
+
+  given labelAnySet[S, SS <: Set[S], T](using sl: SimpleLabeling[S]):
+      NodeLabeling[SS, T] with
+    def getLabel(ss: SS, g: Graphable[SS, T]): String = {
       val sb = new StringBuilder
       var sep = "{"
-      val sublabeler = summon[NodeLabeling[Any]]
       for(s <- ss) {
         sb ++= sep
-        sb ++= sublabeler.getLabel(s)
+        sb ++= sl.getLabel(s)
         sep = ", "
       }
       sb += '}'
       sb.toString
     }
 
-  def labelingSetOf[Elem](nl:NodeLabeling[Elem]):NodeLabeling[Set[Elem]] =
-    labelingSetOf[Elem]("{", ",", "}", nl)
-  def labelingSetOf[Elem](prefix:String, separator:String, suffix:String,
-                          nl:NodeLabeling[Elem]):NodeLabeling[Set[Elem]] =
-    new NodeLabeling[Set[Elem]] {
-      def getLabel(ss:Set[Elem]):String = {
+  def labelingSetOf[Elem,T](nl:SimpleLabeling[Elem]):NodeLabeling[Set[Elem],T] =
+    labelingSetOf[Elem,T]("{", ",", "}", nl)
+  def labelingSetOf[Elem,T](
+    prefix:String, separator:String, suffix:String,
+    nl: SimpleLabeling[Elem]):
+      NodeLabeling[Set[Elem], T] =
+    new NodeLabeling[Set[Elem], T] {
+      def getLabel(ss:Set[Elem], g: Graphable[Set[Elem],T]):String = {
         val sb = new StringBuilder
         var sep = prefix
         for(s <- ss) {

@@ -46,9 +46,9 @@ trait Sampler {
     doc: LaTeXdoc, cleaner: FilesCleaner, what: Graphable[X,Y],
     tag: String, width: String
   )(using
-    nodeLabeling: NodeLabeling[X],
+    nodeLabeling: NodeLabeling[X, Y],
     transitionLabeling: TransitionLabeling[Y],
-    options: GraphvizOptions
+    options: GraphvizOptions[X, Y]
   ):Unit = {
     // println("In 5-arg graphable")
     doc.graphable(what, tag, width)
@@ -58,9 +58,9 @@ trait Sampler {
     doc: LaTeXdoc, cleaner: FilesCleaner, what: Graphable[X,Y],
     tag: String, title: String, width: String
   )(using
-    nodeLabeling: NodeLabeling[X],
+    nodeLabeling: NodeLabeling[X, Y],
     transitionLabeling: TransitionLabeling[Y],
-    options: GraphvizOptions
+    options: GraphvizOptions[X, Y]
   ): Unit = {
     // println("In 6-arg graphable")
     subsection(doc, title)

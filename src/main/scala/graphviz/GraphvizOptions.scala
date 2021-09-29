@@ -10,7 +10,7 @@
 
 package org.maraist.graphviz
 
-class GraphvizOptions(
+class GraphvizOptions[S,T](
   var format: String = "pdf",
   var srcSuffix: String = "dot",
   var executable: String = "dot",
@@ -19,7 +19,7 @@ class GraphvizOptions(
   var margin: Double = GraphvizOptions.defaultMargin,
   var nodeShape: String = "circle",
   var finalNodeShape: String = "doublecircle") {
-  def this(opts: GraphvizOptions) = {
+  def this(opts: GraphvizOptions[S, T]) = {
     this(
       opts.format, opts.srcSuffix, opts.executable, opts.keepDOT,
       opts.fontSize, opts.margin, opts.nodeShape, opts.finalNodeShape)
@@ -27,8 +27,9 @@ class GraphvizOptions(
 }
 
 object GraphvizOptions {
-  given GraphvizOptions = new GraphvizOptions()
-  def makeLocalOptions(using opts: GraphvizOptions) = new GraphvizOptions(opts)
+  given go[S, T]: GraphvizOptions[S, T] = new GraphvizOptions[S, T]()
+  def makeLocalOptions[S, T](using opts: GraphvizOptions[S, T]) =
+    new GraphvizOptions[S, T](opts)
   val defaultFontSize: Int = 12
   val defaultMargin: Double = 0.5
 }

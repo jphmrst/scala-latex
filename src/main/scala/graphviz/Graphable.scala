@@ -31,27 +31,27 @@ trait Graphable[S,T] {
    *  to render this object.
    */
   def toDOT(using
-    nodeLabeling: NodeLabeling[S],
+    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
-    graphvizOptions: GraphvizOptions
+    graphvizOptions: GraphvizOptions[S, T]
   ): String
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
   def graphviz(fileRoot: String)(using
-    nodeLabeling: NodeLabeling[S],
+    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
-    options: GraphvizOptions
+    options: GraphvizOptions[S, T]
   ):Unit = graphviz(
     fileRoot + "." + options.srcSuffix,
     fileRoot + "." + options.format)
 
   /** Use Graphviz to render this object as specified. */
   def graphviz(sourceFile: String, outputFile: String)(using
-    nodeLabeling: NodeLabeling[S],
+    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
-    options: GraphvizOptions
+    options: GraphvizOptions[S, T]
   ): Unit = {
     val file = new File(sourceFile)
     val bw = new BufferedWriter(new FileWriter(file))
@@ -86,9 +86,9 @@ trait Graphable[S,T] {
  * both have defaults provided in this trait.
  */
 trait Grapher[X,S,T](using
-  nodeLabeling: NodeLabeling[S],
+  nodeLabeling: NodeLabeling[S, T],
   transitionLabeling: TransitionLabeling[T],
-  graphvizOptions: GraphvizOptions
+  graphvizOptions: GraphvizOptions[S, T]
 ) {
 
   /**
@@ -96,18 +96,18 @@ trait Grapher[X,S,T](using
    *  to render an object.
    */
   def toDOT(x:X)(using
-    nodeLabeling: NodeLabeling[S],
+    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
-    graphvizOptions: GraphvizOptions
+    graphvizOptions: GraphvizOptions[S, T]
   ): String
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
   def graphviz(fileRoot:String, x:X)(using
-    nodeLabeling: NodeLabeling[S],
+    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
-    options: GraphvizOptions
+    options: GraphvizOptions[S, T]
   ): Unit = {
     // println("In 2-arg graphviz()")
     graphviz(
@@ -120,9 +120,9 @@ trait Grapher[X,S,T](using
    *  given file.
    */
   def graphviz(sourceFile: String, outputFile: String, x: X)(using
-    nodeLabeling: NodeLabeling[S],
+    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
-    options: GraphvizOptions
+    options: GraphvizOptions[S, T]
   ): Unit = {
     // println("In 3-arg graphviz()")
     val file = new File(sourceFile)
