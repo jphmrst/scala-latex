@@ -11,17 +11,24 @@
 package org.maraist.graphviz
 
 class GraphStyle[S,T](
+  // Process-related
   var format: String = "pdf",
   var srcSuffix: String = "dot",
   var executable: String = "dot",
+
+  // Graph properties
   var keepDOT: Boolean = false,
   var fontSize: Int = GraphStyle.defaultFontSize,
   var margin: Double = GraphStyle.defaultMargin,
+
+  // Node properties
   var nodeShape: String = "circle",
   var finalNodeShape: String = "doublecircle",
-  var getNodeLabel: (S, Graphable[S, T]) => String =
+  var nodeLabel: (S, Graphable[S, T]) => String =
     (s: S, _: Graphable[S, T]) => s.toString(),
-  var getEdgeLabel: (T, S, S, Graphable[S, T]) => String =
+
+  // Edge properties
+  var edgeLabel: (T, S, S, Graphable[S, T]) => String =
     (t: T, _: S, _: S, _: Graphable[S, T]) => t.toString()) {
 
   def this(opts: GraphStyle[S, T]) = {
@@ -42,11 +49,11 @@ object GraphStyle {
     margin: Double = base.margin,
     nodeShape: String = base.nodeShape,
     finalNodeShape: String = base.finalNodeShape,
-    getNodeLabel: (S, Graphable[S, T]) => String = base.getNodeLabel,
-    getEdgeLabel: (T, S, S, Graphable[S, T]) => String = base.getEdgeLabel) =
+    nodeLabel: (S, Graphable[S, T]) => String = base.nodeLabel,
+    edgeLabel: (T, S, S, Graphable[S, T]) => String = base.edgeLabel) =
     new GraphStyle[S, T](
       format, srcSuffix, executable, keepDOT, fontSize, margin, nodeShape,
-      finalNodeShape, getNodeLabel, getEdgeLabel)
+      finalNodeShape, nodeLabel, edgeLabel)
 
   val defaultFontSize: Int = 12
   val defaultMargin: Double = 0.5
