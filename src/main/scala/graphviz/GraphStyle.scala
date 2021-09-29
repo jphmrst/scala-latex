@@ -10,13 +10,13 @@
 
 package org.maraist.graphviz
 
-class GraphvizOptions[S,T](
+class GraphStyle[S,T](
   var format: String = "pdf",
   var srcSuffix: String = "dot",
   var executable: String = "dot",
   var keepDOT: Boolean = false,
-  var fontSize: Int = GraphvizOptions.defaultFontSize,
-  var margin: Double = GraphvizOptions.defaultMargin,
+  var fontSize: Int = GraphStyle.defaultFontSize,
+  var margin: Double = GraphStyle.defaultMargin,
   var nodeShape: String = "circle",
   var finalNodeShape: String = "doublecircle",
   var getNodeLabel: (S, Graphable[S, T]) => String =
@@ -24,16 +24,16 @@ class GraphvizOptions[S,T](
   var getEdgeLabel: (T, S, S, Graphable[S, T]) => String =
     (t: T, _: S, _: S, _: Graphable[S, T]) => t.toString()) {
 
-  def this(opts: GraphvizOptions[S, T]) = {
+  def this(opts: GraphStyle[S, T]) = {
     this(
       opts.format, opts.srcSuffix, opts.executable, opts.keepDOT,
       opts.fontSize, opts.margin, opts.nodeShape, opts.finalNodeShape)
   }
 }
 
-object GraphvizOptions {
-  given go[S, T]: GraphvizOptions[S, T] = new GraphvizOptions[S, T]()
-  def derivedFrom[S, T](using base: GraphvizOptions[S, T])(
+object GraphStyle {
+  given go[S, T]: GraphStyle[S, T] = new GraphStyle[S, T]()
+  def derivedFrom[S, T](using base: GraphStyle[S, T])(
     format: String = base.format,
     srcSuffix: String = base.srcSuffix,
     executable: String = base.executable,
@@ -44,7 +44,7 @@ object GraphvizOptions {
     finalNodeShape: String = base.finalNodeShape,
     getNodeLabel: (S, Graphable[S, T]) => String = base.getNodeLabel,
     getEdgeLabel: (T, S, S, Graphable[S, T]) => String = base.getEdgeLabel) =
-    new GraphvizOptions[S, T](
+    new GraphStyle[S, T](
       format, srcSuffix, executable, keepDOT, fontSize, margin, nodeShape,
       finalNodeShape, getNodeLabel, getEdgeLabel)
 
