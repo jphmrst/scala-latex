@@ -31,7 +31,6 @@ trait Graphable[S,T] {
    *  to render this object.
    */
   def toDOT(using
-    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
     graphvizOptions: GraphvizOptions[S, T]
   ): String
@@ -40,7 +39,6 @@ trait Graphable[S,T] {
    *  given file.
    */
   def graphviz(fileRoot: String)(using
-    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
     options: GraphvizOptions[S, T]
   ):Unit = graphviz(
@@ -49,7 +47,6 @@ trait Graphable[S,T] {
 
   /** Use Graphviz to render this object as specified. */
   def graphviz(sourceFile: String, outputFile: String)(using
-    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
     options: GraphvizOptions[S, T]
   ): Unit = {
@@ -86,7 +83,6 @@ trait Graphable[S,T] {
  * both have defaults provided in this trait.
  */
 trait Grapher[X,S,T](using
-  nodeLabeling: NodeLabeling[S, T],
   transitionLabeling: TransitionLabeling[T],
   graphvizOptions: GraphvizOptions[S, T]
 ) {
@@ -96,7 +92,6 @@ trait Grapher[X,S,T](using
    *  to render an object.
    */
   def toDOT(x:X)(using
-    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
     graphvizOptions: GraphvizOptions[S, T]
   ): String
@@ -105,7 +100,6 @@ trait Grapher[X,S,T](using
    *  given file.
    */
   def graphviz(fileRoot:String, x:X)(using
-    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
     options: GraphvizOptions[S, T]
   ): Unit = {
@@ -120,7 +114,6 @@ trait Grapher[X,S,T](using
    *  given file.
    */
   def graphviz(sourceFile: String, outputFile: String, x: X)(using
-    nodeLabeling: NodeLabeling[S, T],
     transitionLabeling: TransitionLabeling[T],
     options: GraphvizOptions[S, T]
   ): Unit = {

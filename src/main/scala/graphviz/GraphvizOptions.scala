@@ -18,7 +18,10 @@ class GraphvizOptions[S,T](
   var fontSize: Int = GraphvizOptions.defaultFontSize,
   var margin: Double = GraphvizOptions.defaultMargin,
   var nodeShape: String = "circle",
-  var finalNodeShape: String = "doublecircle") {
+  var finalNodeShape: String = "doublecircle",
+  var getNodeLabel: (S, Graphable[S, T]) => String =
+    (s: S, _: Graphable[S, T]) => s.toString()) {
+
   def this(opts: GraphvizOptions[S, T]) = {
     this(
       opts.format, opts.srcSuffix, opts.executable, opts.keepDOT,
