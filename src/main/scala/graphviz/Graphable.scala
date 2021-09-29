@@ -30,24 +30,17 @@ trait Graphable[S,T] {
    *  Return the inner lines of a digraph block (or other Graphviz style)
    *  to render this object.
    */
-  def toDOT(using
-    transitionLabeling: TransitionLabeling[T],
-    graphvizOptions: GraphvizOptions[S, T]
-  ): String
+  def toDOT(using graphvizOptions: GraphvizOptions[S, T]): String
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
-  def graphviz(fileRoot: String)(using
-    transitionLabeling: TransitionLabeling[T],
-    options: GraphvizOptions[S, T]
-  ):Unit = graphviz(
+  def graphviz(fileRoot: String)(using options: GraphvizOptions[S, T]):Unit = graphviz(
     fileRoot + "." + options.srcSuffix,
     fileRoot + "." + options.format)
 
   /** Use Graphviz to render this object as specified. */
   def graphviz(sourceFile: String, outputFile: String)(using
-    transitionLabeling: TransitionLabeling[T],
     options: GraphvizOptions[S, T]
   ): Unit = {
     val file = new File(sourceFile)
@@ -82,27 +75,18 @@ trait Graphable[S,T] {
  * to (possibly implicit) options to render an object.  These methods
  * both have defaults provided in this trait.
  */
-trait Grapher[X,S,T](using
-  transitionLabeling: TransitionLabeling[T],
-  graphvizOptions: GraphvizOptions[S, T]
-) {
+trait Grapher[X,S,T](using graphvizOptions: GraphvizOptions[S, T]) {
 
   /**
    *  Return the inner lines of a digraph block (or other Graphviz style)
    *  to render an object.
    */
-  def toDOT(x:X)(using
-    transitionLabeling: TransitionLabeling[T],
-    graphvizOptions: GraphvizOptions[S, T]
-  ): String
+  def toDOT(x:X)(using graphvizOptions: GraphvizOptions[S, T]): String
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
-  def graphviz(fileRoot:String, x:X)(using
-    transitionLabeling: TransitionLabeling[T],
-    options: GraphvizOptions[S, T]
-  ): Unit = {
+  def graphviz(fileRoot:String, x:X)(using options: GraphvizOptions[S, T]): Unit = {
     // println("In 2-arg graphviz()")
     graphviz(
       fileRoot + "." + options.srcSuffix,
@@ -114,7 +98,6 @@ trait Grapher[X,S,T](using
    *  given file.
    */
   def graphviz(sourceFile: String, outputFile: String, x: X)(using
-    transitionLabeling: TransitionLabeling[T],
     options: GraphvizOptions[S, T]
   ): Unit = {
     // println("In 3-arg graphviz()")

@@ -14,7 +14,7 @@ import scala.sys.process.* // scalastyle:ignore
 import scala.collection.mutable.ListBuffer
 import java.io.{File, FileWriter, BufferedWriter}
 import org.maraist.util.FilesCleaner
-import org.maraist.graphviz.{Graphable, GraphvizOptions, TransitionLabeling}
+import org.maraist.graphviz.{Graphable, GraphvizOptions}
 
 /** Accumulation of LaTeX source, to be processed when closed.
   * @param rootFile Root name of the output file (without `.tex`,
@@ -69,7 +69,6 @@ class LaTeXdoc(var rootFile: String) {
       throw new IllegalStateException("Cannot call close " + phase)
     def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String
     )(using
-      transitionLabeling: TransitionLabeling[Y],
       options: GraphvizOptions[X, Y]
     ):
         Unit =
@@ -172,7 +171,6 @@ class LaTeXdoc(var rootFile: String) {
     override def graphable[X,Y](
       what: Graphable[X,Y], tag: String, width: String
     )(using
-      transitionLabeling: TransitionLabeling[Y],
       options: GraphvizOptions[X, Y]
     ):
         Unit = {
@@ -269,7 +267,6 @@ class LaTeXdoc(var rootFile: String) {
   /** Render an object which can be depicted via Graphviz.
     */
   def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String)(using
-    transitionLabeling: TransitionLabeling[Y],
     options: GraphvizOptions[X, Y]
   ): Unit = docState.graphable(what, tag, width)
 }

@@ -11,7 +11,7 @@
 package org.maraist.latex
 import org.maraist.util.FilesCleaner
 import scala.collection.mutable.ArrayBuffer
-import org.maraist.graphviz.{Graphable, GraphvizOptions, TransitionLabeling}
+import org.maraist.graphviz.{Graphable, GraphvizOptions}
 
 /** Methods for a samples manual builder.
  */
@@ -45,7 +45,6 @@ trait Sampler {
     doc: LaTeXdoc, cleaner: FilesCleaner, what: Graphable[X,Y],
     tag: String, width: String
   )(using
-    transitionLabeling: TransitionLabeling[Y],
     options: GraphvizOptions[X, Y]
   ):Unit = {
     // println("In 5-arg graphable")
@@ -56,7 +55,6 @@ trait Sampler {
     doc: LaTeXdoc, cleaner: FilesCleaner, what: Graphable[X,Y],
     tag: String, title: String, width: String
   )(using
-    transitionLabeling: TransitionLabeling[Y],
     options: GraphvizOptions[X, Y]
   ): Unit = {
     // println("In 6-arg graphable")

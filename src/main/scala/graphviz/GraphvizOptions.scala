@@ -20,7 +20,9 @@ class GraphvizOptions[S,T](
   var nodeShape: String = "circle",
   var finalNodeShape: String = "doublecircle",
   var getNodeLabel: (S, Graphable[S, T]) => String =
-    (s: S, _: Graphable[S, T]) => s.toString()) {
+    (s: S, _: Graphable[S, T]) => s.toString(),
+  var getEdgeLabel: (T, S, S, Graphable[S, T]) => String =
+    (t: T, _: S, _: S, _: Graphable[S, T]) => t.toString()) {
 
   def this(opts: GraphvizOptions[S, T]) = {
     this(
@@ -31,8 +33,21 @@ class GraphvizOptions[S,T](
 
 object GraphvizOptions {
   given go[S, T]: GraphvizOptions[S, T] = new GraphvizOptions[S, T]()
-  def makeLocalOptions[S, T](using opts: GraphvizOptions[S, T]) =
-    new GraphvizOptions[S, T](opts)
+  def derivedFrom[S, T](using base: GraphvizOptions[S, T])(
+    format: String = base.format,
+    srcSuffix: String = base.srcSuffix,
+    executable: String = base.executable,
+    keepDOT: Boolean = base.keepDOT,
+    fontSize: Int = base.fontSize,
+    margin: Double = base.margin,
+    nodeShape: String = base.nodeShape,
+    finalNodeShape: String = base.finalNodeShape,
+    getNodeLabel: (S, Graphable[S, T]) => String = base.getNodeLabel,
+    getEdgeLabel: (T, S, S, Graphable[S, T]) => String = base.getEdgeLabel) =
+    new GraphvizOptions[S, T](
+      format, srcSuffix, executable, keepDOT, fontSize, margin, nodeShape,
+      finalNodeShape, getNodeLabel, getEdgeLabel)
+
   val defaultFontSize: Int = 12
   val defaultMargin: Double = 0.5
 }
