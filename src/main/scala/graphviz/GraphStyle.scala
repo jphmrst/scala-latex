@@ -22,8 +22,10 @@ class GraphStyle[S,T](
   var margin: Double = GraphStyle.defaultMargin,
 
   // Node properties
-  var nodeShape: String = "circle",
-  var finalNodeShape: String = "doublecircle",
+  var nodeShape: (S, Graphable[S, T]) => String =
+    (s: S, _: Graphable[S, T]) => "circle",
+  var finalNodeShape: (S, Graphable[S, T]) => String =
+    (s: S, _: Graphable[S, T]) => "doublecircle",
   var nodeLabel: (S, Graphable[S, T]) => String =
     (s: S, _: Graphable[S, T]) => s.toString(),
 
@@ -47,8 +49,8 @@ object GraphStyle {
     keepDOT: Boolean = base.keepDOT,
     fontSize: Int = base.fontSize,
     margin: Double = base.margin,
-    nodeShape: String = base.nodeShape,
-    finalNodeShape: String = base.finalNodeShape,
+    nodeShape: (S, Graphable[S, T]) => String = base.nodeShape,
+    finalNodeShape: (S, Graphable[S, T]) => String = base.finalNodeShape,
     nodeLabel: (S, Graphable[S, T]) => String = base.nodeLabel,
     edgeLabel: (T, S, S, Graphable[S, T]) => String = base.edgeLabel) =
     new GraphStyle[S, T](
