@@ -11,6 +11,9 @@
 package org.maraist.graphviz
 
 class GraphStyle[S,T](
+  // An identifier for this GraphStyle
+  var id: String = "",
+
   // Process-related
   var format: String = "pdf",
   var srcSuffix: String = "dot",
@@ -33,16 +36,22 @@ class GraphStyle[S,T](
   var edgeLabel: (T, S, S, Graphable[S, T]) => String =
     (t: T, _: S, _: S, _: Graphable[S, T]) => t.toString()) {
 
+  val internalId: String = if id.length == 0 then super.toString() else id
+
+  override def toString(): String = internalId
+
   def this(opts: GraphStyle[S, T]) = {
     this(
+      opts.internalId,
       opts.format, opts.srcSuffix, opts.executable, opts.keepDOT,
       opts.fontSize, opts.margin, opts.nodeShape, opts.finalNodeShape)
   }
 }
 
 object GraphStyle {
-  given go[S, T]: GraphStyle[S, T] = new GraphStyle[S, T]()
+  given go[S, T]: GraphStyle[S, T] = new GraphStyle[S, T]("global-default")
   def derivedFrom[S, T](using base: GraphStyle[S, T])(
+    id: String = "",
     format: String = base.format,
     srcSuffix: String = base.srcSuffix,
     executable: String = base.executable,
@@ -54,7 +63,7 @@ object GraphStyle {
     nodeLabel: (S, Graphable[S, T]) => String = base.nodeLabel,
     edgeLabel: (T, S, S, Graphable[S, T]) => String = base.edgeLabel) =
     new GraphStyle[S, T](
-      format, srcSuffix, executable, keepDOT, fontSize, margin, nodeShape,
+      id, format, srcSuffix, executable, keepDOT, fontSize, margin, nodeShape,
       finalNodeShape, nodeLabel, edgeLabel)
 
   val defaultFontSize: Int = 12

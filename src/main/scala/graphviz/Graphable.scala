@@ -35,14 +35,18 @@ trait Graphable[S,T] {
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
-  def graphviz(fileRoot: String)(using options: GraphStyle[S, T]):Unit = graphviz(
-    fileRoot + "." + options.srcSuffix,
-    fileRoot + "." + options.format)
+  def graphviz(fileRoot: String)(using options: GraphStyle[S, T]): Unit = {
+    // println("    In 1-arg Graphable.graphviz with " + options)
+    graphviz(
+      fileRoot + "." + options.srcSuffix,
+      fileRoot + "." + options.format)
+  }
 
   /** Use Graphviz to render this object as specified. */
   def graphviz(sourceFile: String, outputFile: String)(using
     options: GraphStyle[S, T]
   ): Unit = {
+    // println("     In 2-arg Graphable.graphviz with " + options)
     val file = new File(sourceFile)
     val bw = new BufferedWriter(new FileWriter(file))
     bw.write("digraph finite_state_machine {\n")
@@ -87,7 +91,7 @@ trait Grapher[X,S,T](using graphvizOptions: GraphStyle[S, T]) {
    *  given file.
    */
   def graphviz(fileRoot:String, x:X)(using options: GraphStyle[S, T]): Unit = {
-    // println("In 2-arg graphviz()")
+    // println("    In 2-arg Grapher.graphviz with " + options)
     graphviz(
       fileRoot + "." + options.srcSuffix,
       fileRoot + "." + options.format,
@@ -100,7 +104,7 @@ trait Grapher[X,S,T](using graphvizOptions: GraphStyle[S, T]) {
   def graphviz(sourceFile: String, outputFile: String, x: X)(using
     options: GraphStyle[S, T]
   ): Unit = {
-    // println("In 3-arg graphviz()")
+    // println("     In 3-arg Grapher.graphviz with " + options)
     val file = new File(sourceFile)
     val bw = new BufferedWriter(new FileWriter(file))
     bw.write("digraph finite_state_machine {\n")

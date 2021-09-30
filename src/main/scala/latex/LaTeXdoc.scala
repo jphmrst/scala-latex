@@ -174,7 +174,7 @@ class LaTeXdoc(var rootFile: String) {
       options: GraphStyle[X, Y]
     ):
         Unit = {
-      // println(" - In LaTeXdoc.graphable")
+      // println("    In LaTeXdoc.graphable dispatchee with " + options)
       what.graphviz(tag)
       cleaner += (tag + ".pdf")
       this ++= "\\includegraphics[width="
@@ -268,7 +268,10 @@ class LaTeXdoc(var rootFile: String) {
     */
   def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String)(using
     options: GraphStyle[X, Y]
-  ): Unit = docState.graphable(what, tag, width)
+  ): Unit = {
+    // println("   In LaTeXdoc.graphable dispatcher with " + options)
+    docState.graphable(what, tag, width)
+  }
 }
 
 /** Description of the LaTeX package associated with a document.
