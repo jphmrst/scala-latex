@@ -25,14 +25,14 @@ open class GraphStyle[S,T](
   var margin: Double = GraphStyle.defaultMargin,
 
   // Node properties
-  var nodeShape: (S, Graphable[S, T]) => String =
-    (s: S, _: Graphable[S, T]) => "circle",
-  var nodeLabel: (S, Graphable[S, T]) => String =
-    (s: S, _: Graphable[S, T]) => s.toString(),
+  var nodeShape: (S, Graphable[S, T, ?]) => String =
+    (s: S, _: Graphable[S, T, ?]) => "circle",
+  var nodeLabel: (S, Graphable[S, T, ?]) => String =
+    (s: S, _: Graphable[S, T, ?]) => s.toString(),
 
   // Edge properties
-  var edgeLabel: (T, S, S, Graphable[S, T]) => String =
-    (t: T, _: S, _: S, _: Graphable[S, T]) => t.toString()) {
+  var edgeLabel: (T, S, S, Graphable[S, T, ?]) => String =
+    (t: T, _: S, _: S, _: Graphable[S, T, ?]) => t.toString()) {
 
   val internalId: String = if id.length == 0 then super.toString() else id
 
@@ -58,9 +58,9 @@ object GraphStyle {
     keepDOT: Boolean = base.keepDOT,
     fontSize: Int = base.fontSize,
     margin: Double = base.margin,
-    nodeShape: (S, Graphable[S, T]) => String = base.nodeShape,
-    nodeLabel: (S, Graphable[S, T]) => String = base.nodeLabel,
-    edgeLabel: (T, S, S, Graphable[S, T]) => String = base.edgeLabel) =
+    nodeShape: (S, Graphable[S, T, ?]) => String = base.nodeShape,
+    nodeLabel: (S, Graphable[S, T, ?]) => String = base.nodeLabel,
+    edgeLabel: (T, S, S, Graphable[S, T, ?]) => String = base.edgeLabel) =
     new GraphStyle[S, T](
       id,
       format, srcSuffix, executable,

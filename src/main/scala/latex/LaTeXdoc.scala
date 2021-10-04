@@ -67,9 +67,9 @@ class LaTeXdoc(var rootFile: String) {
       throw new IllegalStateException("Cannot call ++=*/ " + phase)
     def close(): Unit =
       throw new IllegalStateException("Cannot call close " + phase)
-    def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String
-    )(using
-      options: GraphStyle[X, Y]
+    def graphable[X, Y, Style[A, B] <: GraphStyle[A, B]](
+      what: Graphable[X, Y, Style], tag: String, width: String)(
+      using options: Style[X, Y]
     ):
         Unit =
       throw new IllegalStateException("Cannot call graphable " + phase)
@@ -168,11 +168,9 @@ class LaTeXdoc(var rootFile: String) {
       cleaner.clean
     }
 
-    override def graphable[X,Y](
-      what: Graphable[X,Y], tag: String, width: String
-    )(using
-      options: GraphStyle[X, Y]
-    ):
+    override def graphable[X, Y, Style[A, B] <: GraphStyle[A, B]](
+      what: Graphable[X, Y, Style], tag: String, width: String)(
+      using options: Style[X, Y]):
         Unit = {
       // println("    In LaTeXdoc.graphable dispatchee with " + options)
       what.graphviz(tag)
@@ -266,8 +264,11 @@ class LaTeXdoc(var rootFile: String) {
 
   /** Render an object which can be depicted via Graphviz.
     */
-  def graphable[X,Y](what: Graphable[X,Y], tag: String, width: String)(using
-    options: GraphStyle[X, Y]
+  def graphable[X, Y, Style[A, B] <: GraphStyle[A, B]](
+    what: Graphable[X, Y, Style],
+    tag: String,
+    width: String)(
+    using options: Style[X, Y]
   ): Unit = {
     // println("   In LaTeXdoc.graphable dispatcher with " + options)
     docState.graphable(what, tag, width)

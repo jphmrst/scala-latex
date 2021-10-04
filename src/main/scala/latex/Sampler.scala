@@ -41,19 +41,19 @@ trait Sampler {
     latexable(doc, what)
   }
 
-  protected def graphable[X,Y](
-    doc: LaTeXdoc, cleaner: FilesCleaner, what: Graphable[X,Y],
+  protected def graphable[X, Y, Style[A, B] <: GraphStyle[A, B]](
+    doc: LaTeXdoc, cleaner: FilesCleaner, what: Graphable[X, Y, Style],
     tag: String, width: String)(
-    using options: GraphStyle[X, Y]):
+    using options: Style[X, Y]):
       Unit = {
     // println("  In 5-arg Sampler.graphable with " + options)
     doc.graphable(what, tag, width)
   }
 
-  protected def graphable[X,Y](
-    doc: LaTeXdoc, cleaner: FilesCleaner, what: Graphable[X,Y],
+  protected def graphable[X, Y, Style[A, B] <: GraphStyle[A, B]](
+    doc: LaTeXdoc, cleaner: FilesCleaner, what: Graphable[X, Y, Style],
     tag: String, title: String, width: String)(
-    using options: GraphStyle[X, Y]):
+    using options: Style[X, Y]):
       Unit = {
     // println(" In 6-arg Sampler.graphable with " + options)
     subsection(doc, title)

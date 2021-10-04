@@ -25,17 +25,17 @@ import java.io.BufferedWriter
  * to (possibly implicit) options to render an object.  These methods
  * both have defaults provided in this trait.
  */
-trait Graphable[S,T] {
+trait Graphable[S, T, Style[X, Y] <: GraphStyle[X, Y]] {
   /**
    *  Return the inner lines of a digraph block (or other Graphviz style)
    *  to render this object.
    */
-  def toDOT(using graphvizOptions: GraphStyle[S, T]): String
+  def toDOT(using graphvizOptions: Style[S, T]): String
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
-  def graphviz(fileRoot: String)(using options: GraphStyle[S, T]): Unit = {
+  def graphviz(fileRoot: String)(using options: Style[S, T]): Unit = {
     // println("    In 1-arg Graphable.graphviz with " + options)
     graphviz(
       fileRoot + "." + options.srcSuffix,
@@ -44,7 +44,7 @@ trait Graphable[S,T] {
 
   /** Use Graphviz to render this object as specified. */
   def graphviz(sourceFile: String, outputFile: String)(using
-    options: GraphStyle[S, T]
+    options: Style[S, T]
   ): Unit = {
     // println("     In 2-arg Graphable.graphviz with " + options)
     val file = new File(sourceFile)
@@ -79,18 +79,19 @@ trait Graphable[S,T] {
  * to (possibly implicit) options to render an object.  These methods
  * both have defaults provided in this trait.
  */
-trait Grapher[X,S,T](using graphvizOptions: GraphStyle[S, T]) {
+trait Grapher[X, S, T, Style[X, Y] <: GraphStyle[X, Y]](
+  using graphvizOptions: Style[S, T]) {
 
   /**
    *  Return the inner lines of a digraph block (or other Graphviz style)
    *  to render an object.
    */
-  def toDOT(x:X)(using graphvizOptions: GraphStyle[S, T]): String
+  def toDOT(x:X)(using graphvizOptions: Style[S, T]): String
 
   /** Use Graphviz to render this object (in the default format) to the
    *  given file.
    */
-  def graphviz(fileRoot:String, x:X)(using options: GraphStyle[S, T]): Unit = {
+  def graphviz(fileRoot:String, x:X)(using options: Style[S, T]): Unit = {
     // println("    In 2-arg Grapher.graphviz with " + options)
     graphviz(
       fileRoot + "." + options.srcSuffix,
@@ -102,7 +103,7 @@ trait Grapher[X,S,T](using graphvizOptions: GraphStyle[S, T]) {
    *  given file.
    */
   def graphviz(sourceFile: String, outputFile: String, x: X)(using
-    options: GraphStyle[S, T]
+    options: Style[S, T]
   ): Unit = {
     // println("     In 3-arg Grapher.graphviz with " + options)
     val file = new File(sourceFile)
