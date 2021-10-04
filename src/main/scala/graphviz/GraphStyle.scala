@@ -10,7 +10,7 @@
 
 package org.maraist.graphviz
 
-class GraphStyle[S,T](
+open class GraphStyle[S,T](
   // An identifier for this GraphStyle
   var id: String = "",
 
@@ -27,8 +27,6 @@ class GraphStyle[S,T](
   // Node properties
   var nodeShape: (S, Graphable[S, T]) => String =
     (s: S, _: Graphable[S, T]) => "circle",
-  var finalNodeShape: (S, Graphable[S, T]) => String =
-    (s: S, _: Graphable[S, T]) => "doublecircle",
   var nodeLabel: (S, Graphable[S, T]) => String =
     (s: S, _: Graphable[S, T]) => s.toString(),
 
@@ -43,8 +41,10 @@ class GraphStyle[S,T](
   def this(opts: GraphStyle[S, T]) = {
     this(
       opts.internalId,
-      opts.format, opts.srcSuffix, opts.executable, opts.keepDOT,
-      opts.fontSize, opts.margin, opts.nodeShape, opts.finalNodeShape)
+      opts.format, opts.srcSuffix, opts.executable,
+      opts.keepDOT, opts.fontSize, opts.margin,
+      opts.nodeShape, opts.nodeLabel,
+      opts.edgeLabel)
   }
 }
 
@@ -59,12 +59,14 @@ object GraphStyle {
     fontSize: Int = base.fontSize,
     margin: Double = base.margin,
     nodeShape: (S, Graphable[S, T]) => String = base.nodeShape,
-    finalNodeShape: (S, Graphable[S, T]) => String = base.finalNodeShape,
     nodeLabel: (S, Graphable[S, T]) => String = base.nodeLabel,
     edgeLabel: (T, S, S, Graphable[S, T]) => String = base.edgeLabel) =
     new GraphStyle[S, T](
-      id, format, srcSuffix, executable, keepDOT, fontSize, margin, nodeShape,
-      finalNodeShape, nodeLabel, edgeLabel)
+      id,
+      format, srcSuffix, executable,
+      keepDOT, fontSize, margin,
+      nodeShape, nodeLabel,
+      edgeLabel)
 
   val defaultFontSize: Int = 12
   val defaultMargin: Double = 0.5
