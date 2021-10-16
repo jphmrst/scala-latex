@@ -25,7 +25,7 @@ import java.io.BufferedWriter
  * to (possibly implicit) options to render an object.  These methods
  * both have defaults provided in this trait.
  */
-trait Graphable[S, T, Style[X, Y] <: GraphStyle[X, Y]] {
+trait Graphable[S, T, -Style[X, Y] <: GraphStyle[X, Y]] {
   /**
    *  Return the inner lines of a digraph block (or other Graphviz style)
    *  to render this object.
