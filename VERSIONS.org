@@ -1,7 +1,16 @@
 
-- 2.0.0 :: Simplified treatment of implicits in Graphviz library.
+- 2.0.0 :: Simplified treatment of implicits in Graphviz library,
+  involving significant API changes.
+
+  - Added a notion of graph style to the Graphviz side, consolidating
+    the several previous utility classes.
+
+  - The graph style is now an additional type parameter to Graphable.
+
+  - These changes are reflected in changes in the LaTeX-related
+    classes.
 
 - 1.1.2 :: Added `+=` operator for adding a single character to the
   document.
 
-  This file of changed started with this version
+  This file of changes started with this version
