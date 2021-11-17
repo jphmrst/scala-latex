@@ -5,7 +5,7 @@ val scala3Version = "3.1.0"
 name := "scala-latex"
 
 // library version
-version := "2.0.0" // Roll version for simplifying API
+version := "2.0.1" // Roll version for simplifying API
 
 
 /////////////////////////////////////////////////////////////////
