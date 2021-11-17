@@ -21,4 +21,17 @@ object LaTeX {
   def lowercaseS:String = "s"
   def mathModeDollar:String = "$"
   def ampersandSep:String = " & "
+
+  def quoteString(cs: String) = {
+    val sb = new StringBuilder
+    for (c <- cs) c match {
+      case '\\' => { sb ++= "$\\backslash$" }
+      case '&' =>  { sb ++= "\\&" }
+      case '%' =>  { sb ++= "\\%" }
+      case '$' =>  { sb ++= "\\$" }
+      case '#' =>  { sb ++= "\\#" }
+      case _ => { sb += c}
+    }
+    sb.result
+  }
 }
