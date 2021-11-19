@@ -1,6 +1,8 @@
 
 - 2.0.1 :: Quote utility for LaTeX text.
 
+  Should probably have been numbered 2.1.0.
+
 - 2.0.0 :: Simplified treatment of implicits in Graphviz library,
   involving significant API changes.
 
